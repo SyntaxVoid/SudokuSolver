@@ -1,5 +1,5 @@
 # SudokuSolver
-General sudoku solver written in python 3 without any external dependancies.
+General sudoku solver written in python 3 without any external dependencies.
 
 ## [Cloning SudokuSolver to your local directory][100]
 Navigate to where you want to clone SudokuSolver. Note that cloning *will* create a "SudokuSolver" folder itself.
@@ -18,7 +18,7 @@ Soon, you will be able to specify a file with the board in the command line. As 
 
 # [Contributing your own code][102]
 ## [Setting remote origin][103]
-If you want to make your own contributions, make sure you're a collaborator. If you are unsure or would like to request collaborator access, email John at j.gresl12@gmail.com. Once you're a collaborator, run the following to make the master branch the default, replacing YOUR\_GITHUB\_USERNAME with your github.com username.
+If you want to make your own contributions, make sure you're a collaborator. Once you're a collaborator, run the following to make the master branch the default, replacing YOUR\_GITHUB\_USERNAME with your github.com username.
 
 ```
 $ cd SudokuSolver
