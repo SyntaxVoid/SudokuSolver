@@ -206,7 +206,7 @@ class SudokuBoard(object):
     for n, solution in enumerate(solutions):
       print(f"Solution # {n+1}:")
       self.print_solution(solution)
-      print("\n"*3)
+      print("\n"*1)
     return
 
   def print_solution(self, solution):
@@ -217,10 +217,18 @@ class SudokuBoard(object):
     for row in range(9):
       if row % 3 == 0:
         print(dashes)
-      print(numbers.format(*solution[row]))
+      print(numbers.format(*solution[row]).replace("0", " "))
     print(dashes)
+
+  def print_board(self):
+    """ A wrapper to allow printing of a non-solution board """
+    self.print_solution(self.board)
+
 
 if __name__ == "__main__":
   my_board = SudokuBoard("multiple_solutions.board")
+  print("\n\nOriginal board:")
+  my_board.print_board()
   my_board.find_and_print_all_solutions()
+  input("Press enter to continue...")
   
