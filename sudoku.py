@@ -1,4 +1,4 @@
-# John Gresl -- J.GRESL12@GMAIL.COM
+# John Gresl
 # Written under the GNU General Public License, V3. 29 June 2007
 
 
