@@ -69,12 +69,12 @@ class SudokuSquare(object):
 
   @property
   def row(self):
-    """ Allows the user to call SudokuSquare.row() to extract the row """
+    """ Allows the user to call SudokuSquare.row to extract the row """
     return self.cur_row
 
   @property
   def col(self):
-    """ Allows the user to call SudokuSquare.col() to extract the column """
+    """ Allows the user to call SudokuSquare.col to extract the column """
     return self.cur_col
   
   def __hash__(self):
