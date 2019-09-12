@@ -51,7 +51,7 @@ $ git commit -m "Summarize your changes."
 $ git push -u origin master
 ```
 
-# [Forking][105]
+## [Forking][105]
 Feel free to fork your own version and submit a pull request (which will add yourself as a contributor).
 
 ## [Building into a .EXE][999]
