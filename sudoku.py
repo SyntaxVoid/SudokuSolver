@@ -287,6 +287,28 @@ def get_usage():
   return
 
 def start():
+  """
+  Main function to run when starting sudoku. Creates the argument parser
+  and parses the arguments from the command line. The description of each
+  argument is below
+  
+    1. -f FILE or --file FILE: FILE should be a path to a valid board file.
+       This argument is optional. If it is not supplied, the user is asked
+       to manually enter the path to a file.
+    2. -a or --all: Boolean flag. Used to determine if _all_ solutions should
+       be found for the board or just the first solution. This argument is
+       optional. If it is supplied, args.all is set to True. Otherwise, 
+       args.all is set to False.
+    3. -h or --help: Displays a help message
+  
+  If any exception occurs after the arguments have been parsed, any open file
+  object is guaranteed to be closed. An error message is then printed, followed
+  by the actual exception. The exceptions is then re-raised, potentially
+  printing it twice. The function pauses at the end to ensure the window 
+  doesn't close after completion.
+
+  Returns None
+  """
   parser = argparse.ArgumentParser(description = "Sudoku Solver",
                                    usage = get_usage())
   parser.add_argument("-f", "--file", 
@@ -316,11 +338,11 @@ def start():
   except Exception as e:
     if file_object is not None:
       file_object.close()
-      print("An unknown exception occured, open file resources freed.")
-      print(str(e))
+      stderr_print("An unknown exception occured, open file resources freed.")
+      stderr_print(str(e))
       raise e
   pause()
-  return
+  return None
 
 
 if __name__ == "__main__":
