@@ -2,6 +2,8 @@
 # Written under the GNU General Public License, V3. 29 June 2007
 import sys
 import os
+import argparse
+from _io import TextIOWrapper
 
 class BoardSolved(Exception): 
   """ This exception should be raised when the board is solved. """
@@ -96,16 +98,20 @@ class SudokuBoard(object):
     YOUR fault... =)
 
     Inputs:
-      board: Must either be a file containing the board or a 9x9 iterable
+      board: Must be one of:
+              1. An open text file with read permission
+              2. A string containing the path to a sudoku board file
+              3. A 9x9 iterable containing the board values
     """
-    try:
-      with open(board) as board_file:
-        board = board_file.read().split("\n")
-    except (TypeError, FileNotFoundError):
-      # If board is not a string or a path to a valid file path, then we assume 
-      # it's a 9x9 iterable and can continue
-      pass
-    self.board = [ [0]*9 for _ in range(9)]  # Fully empty board object
+    if isinstance(board, TextIOWrapper): # (1) from above
+      board = board.read().split("\n")
+    else:
+      try:
+        with open(board) as board_file: # (2) from above
+          board = board_file.read().split("\n")
+      except (TypeError, FileNotFoundError): # (3) from above (assumed)
+        pass
+    self.board = [ [0]*9 for _ in range(9)]
     for row in range(9):
       for col in range(9):
         self.board[row][col] = int(board[row][col])
@@ -226,74 +232,89 @@ class SudokuBoard(object):
     self.print_solution(self.board)
 
 
-class InvalidArguments(Exception):
-  def __init__(self, message):
-    self.message = f"sudoku.exe: {message}"
-    return
-
-
 def stderr_print(*args, **kwargs):
+  """ Acts just like print, but sends the output to stderr isntead of stdout """
   print(*args, **kwargs, file = sys.stderr)
+  return 
+
+
+def get_board_file():
+  """ 
+  Continuously asks the user to enter a file path until a valid path is 
+  retrieved. Then attempts to return the opened file in read mode. If opening
+  the file fails (because of lack of permissions or if the file was deleted
+  between if-statements), an error message will be displayed and the user will
+  be asked to enter another path. If any other exception occurs, a message is
+  displayed, the exception is printed, and finally the original exception is
+  raised. This function does no content validation on the file.
+
+  Inputs: N/A
+
+  Returns: An open file object to a sudoku board text file. 
+  """
+  while True:
+    print("Enter the full or relative path to a sudoku board (q to quit)")
+    print(f"    Current directory: {os.getcwd()}")
+    user_in = input(">> ").strip()
+    if user_in.lower() == "q":
+      return None
+    if not os.path.isfile(user_in):
+      stderr_print("Not a valid file path.")
+      continue
+    try:
+      return open(user_in, "r")
+    except IOError:
+      stderr_print("You do not have permission to read that location.")
+      continue
+    except FileNotFoundError: # Race condition; file could be deleted already
+      stderr_print("Not a valid file path.")
+      continue
+    except Exception as e:
+      stderr_print("Unexpected exception.")
+      stderr_print(str(e))
+      raise e
+    
+def pause(msg = "Press enter to continue. . ."):
+  """ Displays msg and waits for user to enter. Does nothing with the input """
+  input(msg)
   return
 
+
 def start():
-  args = sys.argv[1:]
-  if len(args) > 1:
-    stderr_print(f"sudoku.exe: Invalid args -- {', '.join(args)}")
-    stderr_print("Try 'sudoku.exe --help' for more information.")
-  elif len(args) == 1:
-    if args[0] == "--help":
-      print("""Usage: sudoku [BOARD_FILE] [--all]")
-Solves sudoku boards! 
-
-If BOARD_FILE is specified, will attempt to load 
-the board from that file. If BOARD_FILE is not 
-specified, the program will ask you to provide a
-path to a valid board. A valid board file is a 
-text file with a 9x9 grid of the actual board. 
-Blanks should be represented as zeros. An example 
-board can be seen below:
-
-000000150
-005007620
-021900007
-203179400
-000605000
-007382906
-100004790
-059700200
-084000000
-
-If --all is provided, it should be last. Adding it
-causes the program to try and find all solutions to
-the board. Most sudoku boards have only one solution.
-
-If you are using the exe, you can find all solutions 
-from multiple_solutions.board by running:
-
-sudoku multiple_solutions.board --all
-
-If you are using the python file, you can find all
-solutions from multiple_solutions.board by running:
-
-python sudoku.py multiple_solutions.board --all
-""")
-      return
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-f", "--file", 
+                      help = "File to the sudoku board", 
+                      type = argparse.FileType("r", encoding = "UTF-8"))
+  parser.add_argument("-a", "--all", 
+                      help = "Find ALL solutions to the given board",
+                      action = "store_true")
+  args = parser.parse_args()
+  try:
+    if args.file is not None:
+      file_object = args.file
     else:
-      print("You (might) have entered a path!")
-      if not os.path.isfile(args[0]):
-        stderr_print(f"sudoku.exe: Invalid path -- No file at '{args[0]}'")
-        return  
-  else:
-    print("You entered nothing!")
-
+      file_object = get_board_file()
+      if file_object is None: # User aborted
+        return
+    my_board = SudokuBoard(file_object)
+    file_object.close() # No longer need it!
+    file_object = None
+    print("\n\nOriginal Board:")
+    my_board.print_board()
+    pause("Press enter to solve your board. . .")
+    if args.all:
+      my_board.find_and_print_all_solutions()
+    else:
+      my_board.find_and_print_solution()
+  except Exception as e:
+    if file_object is not None:
+      file_object.close()
+      print("An unknown exception occured, open file resources freed.")
+      print(str(e))
+      raise e
+  pause()
+  return
 
 
 if __name__ == "__main__":
-  start()
-  # my_board = SudokuBoard("multiple_solutions.board")
-  # print("\n\nOriginal board:")
-  # my_board.print_board()
-  # my_board.find_and_print_all_solutions()
-  # input("Press enter to continue...")
-  
+  start()  
