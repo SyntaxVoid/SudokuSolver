@@ -66,10 +66,6 @@ class SudokuSquare(object):
     create a new object. Only for human-readable format """
     return f"SudokuSquare[{self.row}, {self.col}]"
 
-  def __eq__(self, right):
-    """ Compare the current square from self with the SudokuSquare on right """
-    return (self.cur_row == right.cur_row) and (self.cur_col == right.cur_col)
-
   @property
   def row(self):
     """ Allows the user to call SudokuSquare.row to extract the row """
@@ -79,13 +75,7 @@ class SudokuSquare(object):
   def col(self):
     """ Allows the user to call SudokuSquare.col to extract the column """
     return self.cur_col
-  
-  def __hash__(self):
-    """
-    Produces a unique value to be used in the hash-table when creating the
-    solution dictionary. Collisions are impossible.
-    """
-    return int(f"{self.row}{self.col}")
+
 
 class SudokuBoard(object):
   """ Represents an entire Sudoku board and does the high-level solving """
