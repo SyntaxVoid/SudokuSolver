@@ -226,18 +226,66 @@ class SudokuBoard(object):
     self.print_solution(self.board)
 
 
+class InvalidArguments(Exception):
+  def __init__(self, message):
+    self.message = f"sudoku.exe: {message}"
+    return
+
+
+def stderr_print(*args, **kwargs):
+  print(*args, **kwargs, file = sys.stderr)
+  return
+
 def start():
   args = sys.argv[1:]
   if len(args) > 1:
-    print(f"sudoku.exe: Invalid arguments -- {', '.join(args)}")
-    print("Try 'sudoku.exe --help' for more information.")
-  if len(args) == 1:
+    stderr_print(f"sudoku.exe: Invalid args -- {', '.join(args)}")
+    stderr_print("Try 'sudoku.exe --help' for more information.")
+  elif len(args) == 1:
     if args[0] == "--help":
-      print("Help message!")
+      print("""Usage: sudoku [BOARD_FILE] [--all]")
+Solves sudoku boards! 
+
+If BOARD_FILE is specified, will attempt to load 
+the board from that file. If BOARD_FILE is not 
+specified, the program will ask you to provide a
+path to a valid board. A valid board file is a 
+text file with a 9x9 grid of the actual board. 
+Blanks should be represented as zeros. An example 
+board can be seen below:
+
+000000150
+005007620
+021900007
+203179400
+000605000
+007382906
+100004790
+059700200
+084000000
+
+If --all is provided, it should be last. Adding it
+causes the program to try and find all solutions to
+the board. Most sudoku boards have only one solution.
+
+If you are using the exe, you can find all solutions 
+from multiple_solutions.board by running:
+
+sudoku multiple_solutions.board --all
+
+If you are using the python file, you can find all
+solutions from multiple_solutions.board by running:
+
+python sudoku.py multiple_solutions.board --all
+""")
+      return
     else:
       print("You (might) have entered a path!")
+      if not os.path.isfile(args[0]):
+        stderr_print(f"sudoku.exe: Invalid path -- No file at '{args[0]}'")
+        return  
   else:
-    pass
+    print("You entered nothing!")
 
 
 
