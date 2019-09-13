@@ -208,7 +208,6 @@ class SudokuBoard(object):
 
   def print_solution(self, solution):
     """ Given a solution, returned from solve_first, prints it prettily """
-    
     dashes  = "+-------+-------+-------+"
     numbers = "+ {} {} {} | {} {} {} | {} {} {} +"
     for row in range(9):
@@ -264,17 +263,28 @@ def get_board_file():
       stderr_print(str(e))
       raise e
     
+
 def pause(msg = "Press enter to continue. . ."):
   """ Displays msg and waits for user to enter. Does nothing with the input """
   input(msg)
   return
 
+
 def get_usage():
+  """
+  Returns a string to be used with argparser. The result is dependent on if the
+  program was started with the python interpretter or through the built exe.
+  This is determined by checking the first element in sys.argv which is the
+  name of the file that is being executed (either *.py or *[.exe]). This
+  function returns the appropriate usage string, even if any of the files have
+  been renamed. 
+  """
   if sys.argv[0].endswith(".py"):
-    return "python sudoku.py [-h] [-f FILE] [-a]"
+    return f"python {sys.argv[0]} [-h] [-f FILE] [-a]"
   else:
-    return "sudoku [-h] [-f FILE] [-a]"
+    return f"{sys.argv[0]} [-h] [-f FILE] [-a]"
   return
+
 
 def start():
   """
