@@ -11,10 +11,14 @@ $ git clone https://github.com/syntaxvoid/SudokuSolver.git
 ## [Using the program][101]
 Open a command prompt and navigate to the folder containing sudoku.py. Then run
 ```
-python sudoku.py
+python sudoku.py [-f PATH_TO_BOARD] [-a]
 ```
-Soon, you will be able to specify a file with the board in the command line. As of right now, you must edit the name of the file near the bottom of the `sudoku.py` file
 
+`PATH_TO_BOARD` is a file path to a sudoku board. This is optional. If this is not supplied, the user will be asked to enter the path manually. 
+
+`-a` is a boolean flag. This is optional. If this is supplied, all solutions to the board will be found and not just the first one.
+
+If you are using the executable, replace `python sudoku.py` with `sudoku` in the command above (granted you are in the folder with sudoku.exe).
 
 # [Contributing your own code][102]
 ## [Setting remote origin][103]
@@ -55,7 +59,6 @@ $ git push -u origin master
 Feel free to fork your own version and submit a pull request (which will add yourself as a contributor).
 
 ## [Building into a .EXE][999]
-### *In progress*
 Make sure you have pyinstaller installed. Type `pyinstaller` in any command prompt; if you see a help message then it's installed. If you need to install pyinstaller, run
 ```
 $ pip install pyinstaller
