@@ -279,9 +279,16 @@ def pause(msg = "Press enter to continue. . ."):
   input(msg)
   return
 
+def get_usage():
+  if sys.argv[0].endswith(".py"):
+    return "python sudoku.py [-h] [-f FILE] [-a]"
+  else:
+    return "sudoku [-h] [-f FILE] [-a]"
+  return
 
 def start():
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(description = "Sudoku Solver",
+                                   usage = get_usage())
   parser.add_argument("-f", "--file", 
                       help = "File to the sudoku board", 
                       type = argparse.FileType("r", encoding = "UTF-8"))
