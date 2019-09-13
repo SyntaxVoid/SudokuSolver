@@ -1,6 +1,7 @@
 # John Gresl
 # Written under the GNU General Public License, V3. 29 June 2007
-
+import sys
+import os
 
 class BoardSolved(Exception): 
   """ This exception should be raised when the board is solved. """
@@ -225,10 +226,26 @@ class SudokuBoard(object):
     self.print_solution(self.board)
 
 
+def start():
+  args = sys.argv[1:]
+  if len(args) > 1:
+    print(f"sudoku.exe: Invalid arguments -- {', '.join(args)}")
+    print("Try 'sudoku.exe --help' for more information.")
+  if len(args) == 1:
+    if args[0] == "--help":
+      print("Help message!")
+    else:
+      print("You (might) have entered a path!")
+  else:
+    pass
+
+
+
 if __name__ == "__main__":
-  my_board = SudokuBoard("multiple_solutions.board")
-  print("\n\nOriginal board:")
-  my_board.print_board()
-  my_board.find_and_print_all_solutions()
-  input("Press enter to continue...")
+  start()
+  # my_board = SudokuBoard("multiple_solutions.board")
+  # print("\n\nOriginal board:")
+  # my_board.print_board()
+  # my_board.find_and_print_all_solutions()
+  # input("Press enter to continue...")
   
