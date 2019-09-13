@@ -301,7 +301,7 @@ def start():
     file_object = None
     print("\n\nOriginal Board:")
     my_board.print_board()
-    pause("Press enter to solve your board. . .")
+    pause("\nPress enter to solve your board. . .")
     if args.all:
       my_board.find_and_print_all_solutions()
     else:
