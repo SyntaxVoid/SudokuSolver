@@ -219,8 +219,8 @@ class SudokuBoard(object):
   def print_solution(self, solution):
     """ Given a solution, returned from solve_first, prints it prettily """
     
-    dashes = "-" * 13
-    numbers = "|{}{}{}|{}{}{}|{}{}{}|"
+    dashes  = "+-------+-------+-------+"
+    numbers = "+ {} {} {} | {} {} {} | {} {} {} +"
     for row in range(9):
       if row % 3 == 0:
         print(dashes)
