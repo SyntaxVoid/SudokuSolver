@@ -2,14 +2,14 @@
 General sudoku solver written in python 3 without any external dependencies.
 
 ## [Cloning SudokuSolver to your local directory][100]
-Navigate to where you want to clone SudokuSolver. Note that cloning *will* create a "SudokuSolver" folder itself.
+Navigate to where you want to clone SudokuSolver. Note that cloning *will* create a "`SudokuSolver`" folder itself.
 
 ```
 $ git clone https://github.com/syntaxvoid/SudokuSolver.git
 ```
 
 ## [Using the program][101]
-Open a command prompt and navigate to the folder containing sudoku.py. Then run
+Open a command prompt and navigate to the folder containing `sudoku.py`. Then run
 ```
 python sudoku.py [-f PATH_TO_BOARD] [-a]
 ```
@@ -18,7 +18,21 @@ python sudoku.py [-f PATH_TO_BOARD] [-a]
 
 `-a` is a boolean flag. This is optional. If this is supplied, all solutions to the board will be found and not just the first one.
 
-If you are using the executable, replace `python sudoku.py` with `sudoku` in the command above (granted you are in the folder with sudoku.exe).
+If you are using the executable, replace `python sudoku.py` with `sudoku` in the command above (granted you are in the folder with `sudoku.exe`).
+
+## [Building into a .EXE][999]
+Make sure you have pyinstaller installed. Type `pyinstaller` in any command prompt; if you see a help message then it's installed. If you need to install `pyinstaller`, run
+```
+$ pip install pyinstaller
+```
+
+Then change directory to wherever sudoku.py is located and execute the builder batch script (this only works for windows)
+```
+$ builder
+```
+Say yes to any prompts (if they appear). This will create two folders: "`dist`", and "`build`". The executable you need to run is found under "`dist/`" and is named `sudoku.exe`.
+
+Now run `SudokuSolver\dist\sudoku.exe` and let the Sudoku solving begin.
 
 # [Contributing your own code][102]
 ## [Setting remote origin][103]
@@ -58,19 +72,6 @@ $ git push -u origin master
 ## [Forking][105]
 Feel free to fork your own version and submit a pull request (which will add yourself as a contributor).
 
-## [Building into a .EXE][999]
-Make sure you have pyinstaller installed. Type `pyinstaller` in any command prompt; if you see a help message then it's installed. If you need to install pyinstaller, run
-```
-$ pip install pyinstaller
-```
-
-Then change directory to wherever sudoku.py is located and execute the builder batch script (this only works for windows)
-```
-$ builder
-```
-Say yes to any prompts (if they appear). This will create two folders: "dist", and "build". The executable you need to run is found under "dist/" and is named sudoku.exe
-
-Now run `SudokuSolver\dist\sudoku.exe` and let the Sudoku solving begin.
 
 # Remember to [submit any issues][1]!
 
