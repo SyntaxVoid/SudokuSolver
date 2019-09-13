@@ -1,6 +1,9 @@
 # John Gresl
 # Written under the GNU General Public License, V3. 29 June 2007
-
+import sys
+import os
+import argparse
+from _io import TextIOWrapper
 
 class BoardSolved(Exception): 
   """ This exception should be raised when the board is solved. """
@@ -95,16 +98,20 @@ class SudokuBoard(object):
     YOUR fault... =)
 
     Inputs:
-      board: Must either be a file containing the board or a 9x9 iterable
+      board: Must be one of:
+              1. An open text file with read permission
+              2. A string containing the path to a sudoku board file
+              3. A 9x9 iterable containing the board values
     """
-    try:
-      with open(board) as board_file:
-        board = board_file.read().split("\n")
-    except (TypeError, FileNotFoundError):
-      # If board is not a string or a path to a valid file path, then we assume 
-      # it's a 9x9 iterable and can continue
-      pass
-    self.board = [ [0]*9 for _ in range(9)]  # Fully empty board object
+    if isinstance(board, TextIOWrapper): # (1) from above
+      board = board.read().split("\n")
+    else:
+      try:
+        with open(board) as board_file: # (2) from above
+          board = board_file.read().split("\n")
+      except (TypeError, FileNotFoundError): # (3) from above (assumed)
+        pass
+    self.board = [ [0]*9 for _ in range(9)]
     for row in range(9):
       for col in range(9):
         self.board[row][col] = int(board[row][col])
@@ -225,10 +232,118 @@ class SudokuBoard(object):
     self.print_solution(self.board)
 
 
-if __name__ == "__main__":
-  my_board = SudokuBoard("multiple_solutions.board")
-  print("\n\nOriginal board:")
-  my_board.print_board()
-  my_board.find_and_print_all_solutions()
-  input("Press enter to continue...")
+def stderr_print(*args, **kwargs):
+  """ Acts just like print, but sends the output to stderr isntead of stdout """
+  print(*args, **kwargs, file = sys.stderr)
+  return 
+
+
+def get_board_file():
+  """ 
+  Continuously asks the user to enter a file path until a valid path is 
+  retrieved. Then attempts to return the opened file in read mode. If opening
+  the file fails (because of lack of permissions or if the file was deleted
+  between if-statements), an error message will be displayed and the user will
+  be asked to enter another path. If any other exception occurs, a message is
+  displayed, the exception is printed, and finally the original exception is
+  raised. This function does no content validation on the file.
+
+  Inputs: N/A
+
+  Returns: An open file object to a sudoku board text file. 
+  """
+  while True:
+    print("Enter the full or relative path to a sudoku board (q to quit)")
+    print(f"    Current directory: {os.getcwd()}")
+    user_in = input(">> ").strip()
+    if user_in.lower() == "q":
+      return None
+    if not os.path.isfile(user_in):
+      stderr_print("Not a valid file path.")
+      continue
+    try:
+      return open(user_in, "r")
+    except IOError:
+      stderr_print("You do not have permission to read that location.")
+      continue
+    except FileNotFoundError: # Race condition; file could be deleted already
+      stderr_print("Not a valid file path.")
+      continue
+    except Exception as e:
+      stderr_print("Unexpected exception.")
+      stderr_print(str(e))
+      raise e
+    
+def pause(msg = "Press enter to continue. . ."):
+  """ Displays msg and waits for user to enter. Does nothing with the input """
+  input(msg)
+  return
+
+def get_usage():
+  if sys.argv[0].endswith(".py"):
+    return "python sudoku.py [-h] [-f FILE] [-a]"
+  else:
+    return "sudoku [-h] [-f FILE] [-a]"
+  return
+
+def start():
+  """
+  Main function to run when starting sudoku. Creates the argument parser
+  and parses the arguments from the command line. The description of each
+  argument is below
   
+    1. -f FILE or --file FILE: FILE should be a path to a valid board file.
+       This argument is optional. If it is not supplied, the user is asked
+       to manually enter the path to a file.
+    2. -a or --all: Boolean flag. Used to determine if _all_ solutions should
+       be found for the board or just the first solution. This argument is
+       optional. If it is supplied, args.all is set to True. Otherwise, 
+       args.all is set to False.
+    3. -h or --help: Displays a help message
+  
+  If any exception occurs after the arguments have been parsed, any open file
+  object is guaranteed to be closed. An error message is then printed, followed
+  by the actual exception. The exceptions is then re-raised, potentially
+  printing it twice. The function pauses at the end to ensure the window 
+  doesn't close after completion.
+
+  Returns None
+  """
+  parser = argparse.ArgumentParser(description = "Sudoku Solver",
+                                   usage = get_usage())
+  parser.add_argument("-f", "--file", 
+                      help = "File to the sudoku board", 
+                      type = argparse.FileType("r", encoding = "UTF-8"))
+  parser.add_argument("-a", "--all", 
+                      help = "Find ALL solutions to the given board",
+                      action = "store_true")
+  args = parser.parse_args()
+  try:
+    if args.file is not None:
+      file_object = args.file
+    else:
+      file_object = get_board_file()
+      if file_object is None: # User aborted
+        return
+    my_board = SudokuBoard(file_object)
+    file_object.close() # No longer need it!
+    file_object = None
+    print("\n\nOriginal Board:")
+    my_board.print_board()
+    pause("\nPress enter to solve your board. . .")
+    if args.all:
+      my_board.find_and_print_all_solutions()
+    else:
+      my_board.find_and_print_solution()
+  except Exception as e:
+    if file_object is not None:
+      file_object.close()
+      stderr_print("An unknown exception occured, open file resources freed.")
+      stderr_print(str(e))
+      raise e
+  pause()
+  return None
+
+
+if __name__ == "__main__":
+  start()  
